@@ -1,6 +1,6 @@
 CC=g++
-LD=-lpthread
-OPTS=-g -O0 -std=c++0x -DNDEBUG
+LD=-lpthread -lmsgpack
+OPTS=-g -O0 -std=c++0x
 GTEST_INC= -I$(GTEST_DIR)/include -I$(GTEST_DIR)
 GTEST_DIR=/opt/google/gtest-1.6.0
 WARNS= -W -Wall -Wextra -Wformat=2 -Wstrict-aliasing=4 -Wcast-qual -Wcast-align \
@@ -15,7 +15,7 @@ target:alloc_compare
 test_skiplist:test_skiplist.o libgtest.a
 	$(CC) $^ $(OPTS) $(LD) $(WARNS) -o $@
 	./$@ $(NOTIFY)
-test_skiplist.o:test_skiplist.cc skiplist.h
+test_skiplist.o:test_skiplist.cc skiplist.h markable_ptr.hpp
 	$(CC) $< $(GTEST_INC) $(OPTS) $(WARNS) -o $@ -c
 alloc_efficiency:alloc_efficiency.cc alloc.h
 	$(CC) $< $(OPTS) $(WARNS) -o $@
@@ -40,6 +40,9 @@ gtest-all.o:
 	$(CXX) $(GTEST_INC) -c $(OPTS) $(GTEST_DIR)/src/gtest-all.cc -o $@
 gtest_main.a:gtest-all.o gtest_main.o
 	ar -r $@ $^
+
+.cc.o:
+	$(CXX) $(GTEST_INC) $(OPTS) $< -o $@
 
 clean:
 	rm -f *.o

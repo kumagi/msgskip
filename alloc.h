@@ -72,19 +72,11 @@ public:
 		typename std::set<partial_buffer>::iterator target
 			= buffer_set_.find(partial_buffer(required));
 		if(target != buffer_set_.end()){
-#ifndef NDEBUG
-			printf("before:");target->dump();
-#endif
 			partial_buffer tmp(*target);
 			char* result = tmp.allocate(required);
-#ifndef NDEBUG
-			printf("after:");target->dump();
-#endif
+
 			//buffer_.erase(target);
 			buffer_set_.erase(target);
-#ifndef NDEBUG
-			printf("log:passed from partial %p\n", result);
-#endif
 			if(8 < target->rest()){
 				//buffer_.insert(std::lower_bound(buffer_.begin(),buffer_.end(),tmp),tmp);
 				buffer_set_.insert(tmp);
@@ -99,21 +91,12 @@ public:
 				char* const result = alloc_ptr_;
 				alloc_ptr_+=required;
 				rest_-= required;
-#ifndef NDEBUG
-				printf("log:passed from active %p\n", result);
-#endif
 				return result;
 			}
 
 			// get newpage
 			buffer_set_.insert(partial_buffer(alloc_ptr_, rest_));
-#ifndef NDEBUG
-			printf("new partial:");
-#endif
 			alloc_ptr_ = alctor.allocate(SL_BLOCK_SIZE);
-#ifndef NDEBUG
-			printf("log: new allocate %p\n", alloc_ptr_);
-#endif
 			rest_ = SL_BLOCK_SIZE;
 			total_alloc_ += SL_BLOCK_SIZE;
 			memories_.push_back(alloc_ptr_); // for delete[] 
