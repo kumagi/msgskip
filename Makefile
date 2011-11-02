@@ -1,8 +1,8 @@
 CC=g++
 LD=-lpthread -lmsgpack
 OPTS=-g -O0 -std=c++0x
-GTEST_INC= -I$(GTEST_DIR)/include -I$(GTEST_DIR)
 GTEST_DIR=/opt/google/gtest-1.6.0
+GTEST_INC= -I$(GTEST_DIR)/include -I$(GTEST_DIR)
 WARNS= -W -Wall -Wextra -Wformat=2 -Wstrict-aliasing=4 -Wcast-qual -Wcast-align \
 	-Wwrite-strings -Wfloat-equal -Wpointer-arith -Wswitch-enum
 NOTIFY=&& notify-send Test success! -i ~/themes/ok_icon.png || notify-send Test failed... -i ~/themes/ng_icon.png

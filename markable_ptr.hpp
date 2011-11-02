@@ -85,7 +85,7 @@ public:
   markable_ptr(T* mp) : mptr_(mp) {}
   inline T* load_relaxed(){return reinterpret_cast<T*>(mptr_.load_relaxed());}
 	inline const T* load_relaxed()const{
-		return reinterpret_cast<T*>(mptr_.load_relaxed());
+		return reinterpret_cast<const T*>(mptr_.load_relaxed());
 	}
 	inline T* load_acquire(){return reinterpret_cast<T*>(mptr_.load_acquire());}
 	inline const T* load_acquire()const{

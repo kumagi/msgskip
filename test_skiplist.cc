@@ -36,6 +36,7 @@ TEST(skiplist,many_insert){
 		if(sl.insert(rand() & 511,i)){
 			cnt++;
 		}
+		sl.dump();
 	}
 	//printf("items:%d\n",cnt);
 	

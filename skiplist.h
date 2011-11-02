@@ -2,6 +2,7 @@
 #define SKIPLIST_H
 #include <msgpack.hpp>
 #include <memory>
+#include <cstddef>
 #include <cstdatomic>
 #include <vector>
 #include <random>
@@ -13,7 +14,7 @@
 
 #define SL_MAX_LEVEL 16
 #define SL_LEVEL_THRES 4
-#define OFFSET_OF(x,y) reinterpret_cast<size_t>(&reinterpret_cast<x>(NULL)->y)
+#define OFFSET_OF(x,y) reinterpret_cast<std::size_t>(&reinterpret_cast<x>(NULL)->y)
 
 namespace msgskip{
 template <
@@ -36,18 +37,18 @@ class skiplist{
 		key get_key()const{
 			msgpack::object obj;
 			msgpack::zone z;
-			size_t offset = 0;
+			std::size_t offset = 0;
 			msgpack::unpack_return ret
 				= msgpack::unpack(buff(), 8, &offset, &z, &obj);
 			if(ret){}
 			return obj.as<key>();
 		}
 		uint8_t level()const{return max_level_;}
-		misc::markable_ptr<node>& next(size_t index){
+		misc::markable_ptr<node>& next(std::size_t index){
 			assert(index <= max_level_);
 			return next_[index];
 		}
-		const misc::markable_ptr<node>& next(size_t index)const{
+		const misc::markable_ptr<node>& next(std::size_t index)const{
 			assert(index <= max_level_);
 			return next_[index];
 		}
@@ -70,7 +71,7 @@ private:
 			memory->next(i).store_relaxed(NULL);
 		}
 		char* const ptr = memory->buff();
-		size_t offset = 0;
+		std::size_t offset = 0;
 		offset += misc::pack_it(&ptr[offset], k);
 		offset += misc::pack_it(&ptr[offset], v);
 		return memory;
@@ -88,11 +89,9 @@ public:
 			if(!newnode){
 				newnode = new_node(&k,&v,toplevel);
 			}
-			/*
 				for(int i=0;i<SL_MAX_LEVEL; ++i){
 				printf("%d: %p(%p) -> %p \n", i, preds[i], preds[i]->next(i).load_acquire(), succs[i]);
 			}
-			*/
 
 			newnode->next(0).store_relaxed(succs[0]);
 			if(!preds[0]->next(0).compare_and_set(succs[0], newnode)){continue;}
@@ -131,18 +130,18 @@ public:
 	void dump()const{
 		for(int i=SL_MAX_LEVEL-1;i >= 0 ; --i){
 			int cnt = -1;
-			node* p = head_;
+			const node* p = head_;
 			printf("%2d: ", i);
 			while(p != NULL){
-				printf("-> [%d] ", p->get_key());
+				printf("->%p [%d] ",p, p->get_key());
 				p = p->next(i).load_relaxed();
 				cnt++;
 			}
 			printf("  items:%d\n",cnt);
 		}
 	}
-	size_t random()const{
-		size_t level = 0;
+	std::size_t random()const{
+		std::size_t level = 0;
 		while((level < SL_MAX_LEVEL-1) && (random_() & 3) == 0){++level;}
 		return level;
 	}
